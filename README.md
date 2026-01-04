@@ -1,10 +1,10 @@
-# AutoEscola Pro - Sistema de Gestão de Autoescola
+# AutoMatch Pro - Sistema de Gestão de AutoMatch
 
 Uma aplicação web moderna e responsiva para conectar alunos e instrutores de direção, desenvolvida com React, TypeScript e Tailwind CSS.
 
 ## 🚗 Sobre o Projeto
 
-AutoEscola Pro é uma plataforma completa que facilita o agendamento de aulas de direção, permitindo que alunos encontrem instrutores qualificados e gerenciem suas aulas de forma prática e segura.
+AutoMatch Pro é uma plataforma completa que facilita o agendamento de aulas de direção, permitindo que alunos encontrem instrutores qualificados e gerenciem suas aulas de forma prática e segura.
 
 ## ✨ Funcionalidades
 
@@ -148,4 +148,4 @@ Para integração com Supabase (backend real):
 
 ---
 
-Desenvolvido com ❤️ para AutoEscola Pro
+Desenvolvido com ❤️ para AutoMatch Pro

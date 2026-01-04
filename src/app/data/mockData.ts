@@ -4,7 +4,7 @@ export const mockInstructors: Instructor[] = [
   {
     id: '1',
     full_name: 'Carlos Silva',
-    email: 'carlos@autoescola.com',
+    email: 'carlos@AutoMatch.com',
     phone: '(11) 98765-4321',
     user_type_id: 1,
     user_type: 'INSTRUCTOR',
@@ -34,7 +34,7 @@ export const mockInstructors: Instructor[] = [
   {
     id: '2',
     full_name: 'Ana Santos',
-    email: 'ana@autoescola.com',
+    email: 'ana@AutoMatch.com',
     phone: '(11) 97654-3210',
     user_type_id: 1,
     user_type: 'INSTRUCTOR',
@@ -64,7 +64,7 @@ export const mockInstructors: Instructor[] = [
   {
     id: '3',
     full_name: 'Roberto Oliveira',
-    email: 'roberto@autoescola.com',
+    email: 'roberto@AutoMatch.com',
     phone: '(11) 96543-2109',
     user_type_id: 1,
     user_type: 'INSTRUCTOR',
@@ -94,7 +94,7 @@ export const mockInstructors: Instructor[] = [
   {
     id: '4',
     full_name: 'Juliana Costa',
-    email: 'juliana@autoescola.com',
+    email: 'juliana@AutoMatch.com',
     phone: '(11) 95432-1098',
     user_type_id: 1,
     user_type: 'INSTRUCTOR',

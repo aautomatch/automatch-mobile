@@ -103,7 +103,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Por que escolher a AutoEscola Pro?
+            Por que escolher a AutoMatch Pro?
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Oferecemos a melhor experiência de aprendizado para você conquistar sua habilitação

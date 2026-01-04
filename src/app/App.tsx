@@ -142,14 +142,14 @@ function AppContent() {
                 <h1 className="text-3xl font-bold text-gray-900 mb-6">Sobre Nós</h1>
                 <div className="prose max-w-none">
                   <p className="text-gray-600 mb-4">
-                    A AutoEscola Pro é a plataforma líder em conectar alunos e instrutores de direção em todo o Brasil.
+                    A AutoMatch Pro é a plataforma líder em conectar alunos e instrutores de direção em todo o Brasil.
                   </p>
                   <p className="text-gray-600 mb-4">
                     Nossa missão é tornar o processo de aprendizado mais acessível, transparente e eficiente.
                   </p>
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Nossa História</h2>
                   <p className="text-gray-600">
-                    Fundada em 2020, a AutoEscola Pro nasceu da necessidade de modernizar o mercado de autoescolas, 
+                    Fundada em 2020, a AutoMatch Pro nasceu da necessidade de modernizar o mercado de AutoMatchs, 
                     trazendo tecnologia e praticidade para alunos e instrutores.
                   </p>
                 </div>

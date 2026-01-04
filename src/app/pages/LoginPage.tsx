@@ -45,7 +45,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
             <Car className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">AutoEscola Pro</h1>
+          <h1 className="text-2xl font-bold text-gray-900">AutoMatch Pro</h1>
           <p className="text-gray-600 mt-2">
             {isLogin ? 'Entre na sua conta' : 'Crie sua conta grátis'}
           </p>

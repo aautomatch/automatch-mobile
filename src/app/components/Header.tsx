@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
               <Car className="w-6 h-6 text-white" />
             </div>
-            <span className="font-bold text-xl text-gray-900 hidden sm:block">AutoEscola Pro</span>
+            <span className="font-bold text-xl text-gray-900 hidden sm:block">AutoMatch Pro</span>
           </button>
 
           {/* Desktop Navigation */}

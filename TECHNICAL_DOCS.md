@@ -1,4 +1,4 @@
-# AutoEscola Pro - Documentação Técnica
+# AutoMatch Pro - Documentação Técnica
 
 ## 📊 Visão Geral da Arquitetura
 
@@ -239,4 +239,4 @@ Para questões técnicas:
 
 **Versão**: 1.0.0  
 **Última atualização**: Janeiro 2026  
-**Mantido por**: Equipe AutoEscola Pro
+**Mantido por**: Equipe AutoMatch Pro
