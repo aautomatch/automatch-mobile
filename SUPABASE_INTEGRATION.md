@@ -1,6 +1,6 @@
 # Guia de Integração com Supabase
 
-Este guia descreve como integrar a aplicação AutoMatch Pro com Supabase para adicionar persistência de dados real, autenticação e outras funcionalidades backend.
+Este guia descreve como integrar a aplicação AutoMatch com Supabase para adicionar persistência de dados real, autenticação e outras funcionalidades backend.
 
 ## 📋 Pré-requisitos
 

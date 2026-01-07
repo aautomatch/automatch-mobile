@@ -1,10 +1,10 @@
-# AutoMatch Pro - Sistema de Gestão de AutoMatch
+# AutoMatch - Sistema de Gestão de AutoMatch
 
 Uma aplicação web moderna e responsiva para conectar alunos e instrutores de direção, desenvolvida com React, TypeScript e Tailwind CSS.
 
 ## 🚗 Sobre o Projeto
 
-AutoMatch Pro é uma plataforma completa que facilita o agendamento de aulas de direção, permitindo que alunos encontrem instrutores qualificados e gerenciem suas aulas de forma prática e segura.
+AutoMatch é uma plataforma completa que facilita o agendamento de aulas de direção, permitindo que alunos encontrem instrutores qualificados e gerenciem suas aulas de forma prática e segura.
 
 ## ✨ Funcionalidades
 
@@ -146,6 +146,4 @@ Para integração com Supabase (backend real):
 - O sistema de autenticação é simulado
 - Pronto para integração com backend real (Supabase recomendado)
 
----
 
-Desenvolvido com ❤️ para AutoMatch Pro

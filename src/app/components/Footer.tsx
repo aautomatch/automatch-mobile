@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Car className="w-6 h-6 text-white" />
               </div>
-              <span className="font-bold text-xl text-white">AutoMatch Pro</span>
+              <span className="font-bold text-xl text-white">AutoMatch</span>
             </div>
             <p className="text-sm text-gray-400 mb-4">
               A melhor plataforma para conectar alunos e instrutores de direção.
@@ -58,22 +58,19 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-blue-400" />
-                <span>contato@AutoMatchpro.com</span>
+                <span>contato@AutoMatch.com</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-blue-400" />
                 <span>(11) 3000-0000</span>
               </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
-                <span>Av. Paulista, 1000 - São Paulo, SP</span>
-              </li>
+             
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-          <p>&copy; {new Date().getFullYear()} AutoMatch Pro. Todos os direitos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} AutoMatch. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

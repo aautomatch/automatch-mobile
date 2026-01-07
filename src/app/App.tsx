@@ -3,7 +3,6 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
-import { DemoSwitcher } from './components/DemoSwitcher';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { StudentDashboard } from './pages/StudentDashboard';
@@ -40,7 +39,6 @@ function AppContent() {
     setSelectedInstructor(instructor);
   };
 
-  // Redirect unauthenticated users trying to access protected pages
   useEffect(() => {
     const protectedPages: Page[] = [
       'student-dashboard',
@@ -129,8 +127,7 @@ function AppContent() {
               <p className="text-gray-600">Página de gerenciamento de veículos em desenvolvimento...</p>
             </div>
           </div>
-        );
-
+        )
       case 'lessons':
         return <InstructorDashboard onNavigate={handleNavigate} />;
 
@@ -142,14 +139,14 @@ function AppContent() {
                 <h1 className="text-3xl font-bold text-gray-900 mb-6">Sobre Nós</h1>
                 <div className="prose max-w-none">
                   <p className="text-gray-600 mb-4">
-                    A AutoMatch Pro é a plataforma líder em conectar alunos e instrutores de direção em todo o Brasil.
+                    A AutoMatch é a plataforma líder em conectar alunos e instrutores de direção em todo o Brasil.
                   </p>
                   <p className="text-gray-600 mb-4">
                     Nossa missão é tornar o processo de aprendizado mais acessível, transparente e eficiente.
                   </p>
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Nossa História</h2>
                   <p className="text-gray-600">
-                    Fundada em 2020, a AutoMatch Pro nasceu da necessidade de modernizar o mercado de AutoMatchs, 
+                    Fundada em 2025, a AutoMatch nasceu da necessidade de modernizar o mercado de AutoMatchs, 
                     trazendo tecnologia e praticidade para alunos e instrutores.
                   </p>
                 </div>
@@ -163,7 +160,8 @@ function AppContent() {
     }
   };
 
-  const showHeader = currentPage !== 'login';
+  const showHeader = currentPage !== 'login' && currentPage !== 'home';
+  const showFooter = currentPage !== 'login'; // Footer aparece até na home
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -171,10 +169,9 @@ function AppContent() {
         <Header currentPage={currentPage} onNavigate={handleNavigate} />
       )}
       <main className="flex-1">{renderPage()}</main>
-      {showHeader && <Footer />}
-      {isAuthenticated && <DemoSwitcher />}
+      {showFooter && <Footer />}
     </div>
-  );
+);
 }
 
 export default function App() {
