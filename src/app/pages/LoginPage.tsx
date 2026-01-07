@@ -47,7 +47,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
            <img 
             src={logoUrl}
             alt="AutoMatch Logo" 
-            className="h-64 w-auto"  
+            className="h-32 w-auto"  
           />
           </div>
           <p className="text-gray-600">
