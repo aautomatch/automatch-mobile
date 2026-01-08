@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
               <span className="font-bold text-xl text-white">AutoMatch</span>
             </div>
             <p className="text-sm text-gray-400 mb-4">
-              A melhor plataforma para conectar alunos e instrutores de direção.
+              A melhor plataforma para conectar alunos e instrutores de direção do Brasil.
             </p>
             <div className="flex gap-3">
               <a href="#" className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
