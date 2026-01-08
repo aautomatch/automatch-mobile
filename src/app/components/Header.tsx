@@ -14,8 +14,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
-const logoUrl = new URL("../assets/images/logos/logo.png", import.meta.url)
-  .href;
+const logoUrl = new URL("../assets/images/logos/logo.png", import.meta.url).href;
 
 interface HeaderProps {
   currentPage: string;
@@ -54,10 +53,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        userMenuRef.current &&
-        !userMenuRef.current.contains(e.target as Node)
-      ) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
       }
     };
@@ -66,40 +62,41 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
       <div className="container mx-auto px-4">
-        <div className="flex h-14 items-center justify-between">
-          {/* LOGO */}
-          <button
-            onClick={() => onNavigate("home")}
-            className="flex items-center gap-2"
-          >
-            <img src={logoUrl} alt="AutoMatch" className="h-9 w-auto" />
+        <div className="flex h-16 items-center justify-between">
+
+          <button onClick={() => onNavigate("home")} className="flex items-center">
+            <img src={logoUrl} alt="AutoMatch" className="h-10 w-auto" />
           </button>
 
-          {/* MENU DESKTOP */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-6">
             {menuItems.map((item) => (
               <button
                 key={item.value}
                 onClick={() => onNavigate(item.value)}
-                className={`relative flex items-center gap-2 px-3 py-2 rounded-md text-sm transition ${
-                  currentPage === item.value
-                    ? "text-[#2E5A88] font-semibold"
-                    : "text-gray-600 hover:text-[#2E5A88]"
-                }`}
+                className="group relative flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-[#2E5A88] transition"
               >
                 {item.icon && <item.icon className="w-4 h-4" />}
                 {item.label}
 
-                {currentPage === item.value && (
-                  <span className="absolute -bottom-1 left-2 right-2 h-[2px] bg-[#4CAF50] rounded-full" />
-                )}
+                <span
+                  className={`
+                    absolute -bottom-2 left-0 h-[2px] w-full
+                    bg-gradient-to-r from-[#2E5A88] to-[#4CAF50]
+                    transition-transform duration-300
+                    ${
+                      currentPage === item.value
+                        ? "scale-x-100"
+                        : "scale-x-0 group-hover:scale-x-100"
+                    }
+                  `}
+                />
               </button>
             ))}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-4">
             {isAuthenticated && user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -113,12 +110,12 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
                       className="w-8 h-8 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <User className="w-4 h-4 text-[#2E5A88]" />
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#2E5A88] to-[#4CAF50] flex items-center justify-center text-white">
+                      <User className="w-4 h-4" />
                     </div>
                   )}
 
-                  <span className="text-sm font-medium text-gray-700 hidden sm:block max-w-[120px] truncate">
+                  <span className="text-sm font-medium text-gray-700 max-w-[120px] truncate">
                     {user.full_name?.split(" ")[0]}
                   </span>
 
@@ -130,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <p className="font-medium text-gray-900 truncate">
                         {user.full_name}
@@ -167,7 +164,11 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             ) : (
               <button
                 onClick={() => onNavigate("login")}
-                className="px-4 py-2 rounded-md bg-[#2E5A88] text-white text-sm hover:bg-[#24486D] transition"
+                className="
+                  bg-gradient-to-r from-[#2E5A88] to-[#4CAF50]
+                  text-white px-5 py-2 rounded-full text-sm font-semibold
+                  shadow-md hover:shadow-lg transition
+                "
               >
                 Entrar
               </button>
@@ -193,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm ${
                   currentPage === item.value
-                    ? "text-[#2E5A88] bg-blue-50"
+                    ? "bg-gradient-to-r from-[#2E5A88]/10 to-[#4CAF50]/10 text-[#2E5A88]"
                     : "text-gray-700"
                 }`}
               >
@@ -204,6 +205,8 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
           </div>
         )}
       </div>
+
+      <div className="h-[2px] bg-gradient-to-r from-[#2E5A88] to-[#4CAF50]" />
     </header>
   );
 };

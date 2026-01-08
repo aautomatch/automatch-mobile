@@ -179,7 +179,7 @@ function AppContent() {
     }
   };
 
-  const showHeader = currentPage !== "login" && currentPage !== "home";
+  const showHeader = currentPage !== "login";
   const showFooter = currentPage !== "login";
 
   return (
