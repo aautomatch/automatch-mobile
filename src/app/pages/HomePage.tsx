@@ -248,34 +248,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="bg-gradient-to-r from-[#2E5A88] to-[#4CAF50] rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Pronto para começar sua jornada?
-            </h2>
-            <p className="text-lg mb-8 text-blue-100 max-w-2xl mx-auto">
-              Junte-se a milhares de alunos que já conquistaram sua habilitação com a gente
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => onNavigate('login')}
-                className="bg-white text-[#2E5A88] px-8 py-4 rounded-lg hover:bg-blue-50 transition-all duration-300 font-medium shadow-lg hover:shadow-xl text-lg"
-              >
-                Criar Conta Grátis
-              </button>
-              
-              <button
-                onClick={() => onNavigate('search-instructors')}
-                className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white/10 transition-all duration-300 font-medium text-lg"
-              >
-                Ver Instrutores
-              </button>
-            </div>
-          </div>
-        </div>
-      </section> 
     </div>
   );
 };
