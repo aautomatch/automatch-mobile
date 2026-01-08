@@ -10,6 +10,7 @@ import { InstructorDashboard } from "./pages/InstructorDashboard";
 import { SearchInstructors } from "./pages/SearchInstructors";
 import { BookLessonPage } from "./pages/BookLessonPage";
 import { Instructor } from "./types";
+import { VehiclesPage } from "./pages/VehiclesPage";
 
 type Page =
   | "home"
@@ -124,21 +125,10 @@ function AppContent() {
 
       case "vehicles":
         return (
-          <div className="min-h-screen bg-gray-50 pt-8 pb-12">
-            <div className="container mx-auto px-4">
-              <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Meus Veículos
-                </h1>
-                <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                  Adicionar Veículo
-                </button>
-              </div>
-              <p className="text-gray-600">
-                Página de gerenciamento de veículos em desenvolvimento...
-              </p>
-            </div>
-          </div>
+          <VehiclesPage
+            onNavigate={handleNavigate}
+            onSelectInstructor={handleSelectInstructor}
+          />
         );
       case "lessons":
         return <InstructorDashboard onNavigate={handleNavigate} />;
