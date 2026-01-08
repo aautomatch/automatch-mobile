@@ -10,7 +10,6 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const { login } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -51,7 +50,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           />
           </div>
           <p className="text-gray-600">
-            {isLogin ? 'Entre na sua conta' : 'Crie sua conta gratuitamente'}
+            Crie sua conta gratuitamente
           </p>
         </div>
            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
@@ -113,7 +112,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            {isLogin && (
               <div className="flex items-center justify-between">
                 <label className="flex items-center">
                   <input 
@@ -129,7 +127,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                   Esqueceu a senha?
                 </button>
               </div>
-            )}
 
             <button
               type="submit"
@@ -140,7 +137,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 'Carregando...'
               ) : (
                 <>
-                  <span>{isLogin ? 'Entrar na Conta' : 'Criar Conta Grátis'}</span>
+                  <span>Criar Conta Grátis</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </>
               )}
@@ -149,12 +146,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
           <div className="mt-8 pt-6 border-t border-gray-100 text-center">
             <p className="text-gray-600">
-              {isLogin ? 'Ainda não tem uma conta?' : 'Já tem uma conta?'}{' '}
+              {'Ainda não tem uma conta?'}{' '}
               <button
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => onNavigate('register')}
                 className="text-[#2E5A88] hover:text-[#1E3A5F] font-medium transition-colors duration-300"
               >
-                {isLogin ? 'Criar conta gratuitamente' : 'Fazer login'}
+                Criar conta gratuitamente
               </button>
             </p>
           </div>

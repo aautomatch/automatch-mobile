@@ -9,6 +9,7 @@ import { StudentDashboard } from './pages/StudentDashboard';
 import { InstructorDashboard } from './pages/InstructorDashboard';
 import { SearchInstructors } from './pages/SearchInstructors';
 import { BookLessonPage } from './pages/BookLessonPage';
+import { RegisterPage } from './pages/RegisterPage';
 import { Instructor } from './types';
 
 type Page = 
@@ -23,7 +24,8 @@ type Page =
   | 'profile'
   | 'vehicles'
   | 'lessons'
-  | 'about';
+  | 'about'
+  | 'register';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -63,6 +65,9 @@ function AppContent() {
       
       case 'login':
         return <LoginPage onNavigate={handleNavigate} />;
+
+      case 'register':
+        return <RegisterPage onNavigate={handleNavigate} />;
       
       case 'student-dashboard':
         return <StudentDashboard onNavigate={handleNavigate} />;
