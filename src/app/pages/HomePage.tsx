@@ -113,7 +113,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             </h1>
             
             <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-              Conectamos você aos instrutores mais qualificados da sua região. 
+              teste
               <span className="block mt-2 font-medium text-gray-900">
                 Agende aulas práticas de carro ou moto com total flexibilidade, segurança e acompanhamento personalizado.
               </span>
