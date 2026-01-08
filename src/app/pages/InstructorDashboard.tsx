@@ -1,5 +1,15 @@
-import React, { useState } from 'react';
-import { Calendar, DollarSign, Users, TrendingUp, Clock, Star } from 'lucide-react';
+import React from 'react';
+import {
+  Calendar,
+  DollarSign,
+  Users,
+  Clock,
+  Star,
+  Car,
+  CheckCircle,
+  MessageSquare,
+  Settings
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { mockLessons, mockInstructors, mockVehicles } from '../data/mockData';
 import { LessonCard } from '../components/LessonCard';
@@ -12,23 +22,23 @@ interface InstructorDashboardProps {
 
 export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({ onNavigate }) => {
   const { user } = useAuth();
-  const instructor = mockInstructors[0]; // Mock instructor data
+  const instructor = mockInstructors[0];
 
-  // Mock lessons for instructor
   const instructorLessons = mockLessons.filter(l => l.instructor_id === instructor.id);
   const todayLessons = instructorLessons.filter(l => {
-    const lessonDate = new Date(l.scheduled_at);
-    const today = new Date();
-    return lessonDate.toDateString() === today.toDateString();
+    const today = new Date().toDateString();
+    return new Date(l.scheduled_at).toDateString() === today;
   });
 
   const upcomingLessons = instructorLessons.filter(l => l.status === 'SCHEDULED');
   const completedThisMonth = instructorLessons.filter(l => {
-    const lessonDate = new Date(l.created_at);
+    const d = new Date(l.created_at);
     const now = new Date();
-    return l.status === 'COMPLETED' && 
-           lessonDate.getMonth() === now.getMonth() &&
-           lessonDate.getFullYear() === now.getFullYear();
+    return (
+      l.status === 'COMPLETED' &&
+      d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear()
+    );
   });
 
   const monthlyEarnings = completedThisMonth.reduce((acc, l) => acc + l.price, 0);
@@ -36,222 +46,174 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({ onNavi
   const avgRating = instructor.instructor_details.average_rating;
 
   const stats = [
-    {
-      icon: DollarSign,
-      label: 'Ganhos do Mês',
-      value: `R$ ${monthlyEarnings.toFixed(2)}`,
-      color: 'green',
-      trend: '+12%'
-    },
-    {
-      icon: Users,
-      label: 'Alunos Ativos',
-      value: totalStudents.toString(),
-      color: 'blue',
-      trend: '+3'
-    },
-    {
-      icon: Calendar,
-      label: 'Aulas Agendadas',
-      value: upcomingLessons.length.toString(),
-      color: 'purple',
-      trend: ''
-    },
-    {
-      icon: Star,
-      label: 'Avaliação Média',
-      value: avgRating.toFixed(1),
-      color: 'yellow',
-      trend: ''
-    }
+    { icon: DollarSign, label: 'Ganhos do mês', value: `R$ ${monthlyEarnings.toFixed(2)}` },
+    { icon: Users, label: 'Alunos ativos', value: totalStudents.toString() },
+    { icon: Calendar, label: 'Aulas agendadas', value: upcomingLessons.length.toString() },
+    { icon: Star, label: 'Avaliação média', value: avgRating.toFixed(1) }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-8 md:py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white shadow-lg">
+
+      <div className="bg-gradient-to-r from-[#4A7FB8] to-[#3A6CA1] py-4">
+        <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-6">
+          <div className="flex items-center gap-4">
+            <div className="relative">
               <img
-                src={instructor.profile_image_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400'}
-                alt={instructor.full_name}
-                className="w-full h-full object-cover"
+                src={instructor.profile_image_url}
+                className="w-20 h-20 rounded-full object-cover border-4 border-white/30"
               />
+              <span className="absolute bottom-1 right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white" />
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                Bem-vindo, {instructor.full_name}! 👋
-              </h1>
-              <p className="text-blue-100">
-                Você tem {todayLessons.length} {todayLessons.length === 1 ? 'aula agendada' : 'aulas agendadas'} para hoje
+            <div>
+              <h1 className="text-2xl font-bold">Olá, {instructor.full_name}</h1>
+              <p className="text-white/80 text-sm">
+                {todayLessons.length} aulas hoje
               </p>
             </div>
-            <button
-              onClick={() => onNavigate('vehicles')}
-              className="bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors font-medium self-start md:self-auto"
-            >
-              Gerenciar Veículos
-            </button>
           </div>
+
         </div>
       </div>
 
       <div className="container mx-auto px-4 mt-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-md p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className={`w-12 h-12 bg-${stat.color}-100 rounded-lg flex items-center justify-center`}>
-                  <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
-                </div>
-                {stat.trend && (
-                  <span className="text-green-600 text-sm font-medium">{stat.trend}</span>
-                )}
-              </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {stats.map((stat, i) => (
+            <div key={i} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+              <stat.icon className="w-6 h-6 text-gray-400 mb-4" />
+              <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+              <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
             </div>
           ))}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Today's Schedule */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">Agenda de Hoje</h2>
-                <button
-                  onClick={() => onNavigate('lessons')}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Ver todas
+
+          <div className="lg:col-span-2 space-y-8">
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="flex justify-between mb-6">
+                <div>
+                  <h2 className="text-lg font-semibold">Agenda de Hoje</h2>
+                  <p className="text-sm text-gray-500">
+                    {format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR })}
+                  </p>
+                </div>
+                <button onClick={() => onNavigate('lessons')} className="text-sm text-[#2E5A88] font-medium">
+                  Ver todas →
                 </button>
               </div>
 
-              {todayLessons.length > 0 ? (
-                <div className="space-y-4">
-                  {todayLessons.map((lesson) => (
-                    <div key={lesson.id} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-900">
-                          {format(new Date(lesson.scheduled_at), 'HH:mm')}
-                        </span>
-                        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
-                          {lesson.duration_minutes} min
-                        </span>
+              {todayLessons.length ? (
+                <div className="space-y-5">
+                  {todayLessons.map(lesson => (
+                    <div key={lesson.id} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <span className="w-3 h-3 bg-blue-500 rounded-full" />
+                        <span className="flex-1 w-px bg-gray-200" />
                       </div>
-                      <p className="text-gray-600 text-sm">
-                        Aluno: {lesson.student_id}
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        Veículo: {mockVehicles.find(v => v.id === lesson.vehicle_id)?.license_plate}
-                      </p>
+
+                      <div className="flex-1 bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition">
+                        <div className="flex justify-between mb-1">
+                          <span className="font-semibold">
+                            {format(new Date(lesson.scheduled_at), 'HH:mm')}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {lesson.duration_minutes} min
+                          </span>
+                        </div>
+
+                        <div className="flex gap-4 text-sm text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <Users className="w-4 h-4" /> Aula prática
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Car className="w-4 h-4" />
+                            {mockVehicles.find(v => v.id === lesson.vehicle_id)?.license_plate}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-600">Nenhuma aula agendada para hoje</p>
-                </div>
+                <p className="text-center text-gray-500 py-8">
+                  Nenhuma aula hoje 🚗💤
+                </p>
               )}
             </div>
 
-            {/* Upcoming Lessons */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Próximas Aulas</h2>
-              {upcomingLessons.length > 0 ? (
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h2 className="text-lg font-semibold mb-6">Próximas Aulas</h2>
+              {upcomingLessons.length ? (
                 <div className="space-y-4">
-                  {upcomingLessons.slice(0, 3).map((lesson) => (
-                    <LessonCard
-                      key={lesson.id}
-                      lesson={lesson}
-                      showInstructor={false}
-                    />
+                  {upcomingLessons.slice(0, 3).map(lesson => (
+                    <LessonCard key={lesson.id} lesson={lesson} showInstructor={false} />
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-600">Nenhuma aula agendada</p>
-                </div>
+                <p className="text-gray-500 text-center py-6">Nenhuma aula agendada</p>
               )}
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Stats */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Resumo do Mês</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Aulas Completadas</span>
-                  <span className="font-semibold text-gray-900">{completedThisMonth.length}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Horas Trabalhadas</span>
-                  <span className="font-semibold text-gray-900">
-                    {(completedThisMonth.reduce((acc, l) => acc + l.duration_minutes, 0) / 60).toFixed(1)}h
+          <div className="space-y-8">
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase mb-5">
+                Resumo do mês
+              </h3>
+
+              <SummaryItem label="Aulas concluídas" value={completedThisMonth.length} />
+              <SummaryItem
+                label="Horas trabalhadas"
+                value={`${(completedThisMonth.reduce((a, l) => a + l.duration_minutes, 0) / 60).toFixed(1)}h`}
+              />
+              <SummaryItem label="Taxa de aprovação" value="95%" green />
+              <SummaryItem
+                label="Avaliação média"
+                value={
+                  <span className="flex items-center gap-1">
+                    {avgRating.toFixed(1)}
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                   </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Taxa de Aprovação</span>
-                  <span className="font-semibold text-green-600">95%</span>
-                </div>
-              </div>
+                }
+              />
             </div>
 
-            {/* Vehicles */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900">Meus Veículos</h3>
-                <button
-                  onClick={() => onNavigate('vehicles')}
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                >
-                  Ver todos
-                </button>
-              </div>
-              <div className="space-y-3">
-                {mockVehicles.slice(0, 2).map((vehicle) => (
-                  <div key={vehicle.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 truncate">
-                        {vehicle.brand} {vehicle.model}
-                      </p>
-                      <p className="text-sm text-gray-600">{vehicle.license_plate}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent Reviews */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Avaliações Recentes</h3>
-              <div className="space-y-4">
-                <div className="border-l-4 border-yellow-400 pl-4">
-                  <div className="flex items-center gap-1 mb-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-gray-600 mb-1">
-                    "Excelente instrutor! Muito paciente."
-                  </p>
-                  <p className="text-xs text-gray-500">João Silva - há 2 dias</p>
-                </div>
-              </div>
+            <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+              <ActionButton label="Nova aula" icon={Calendar} />
+              <ActionButton label="Atualizar horários" icon={Clock} green />
+              <ActionButton label="Configurações" icon={Settings} purple />
             </div>
           </div>
         </div>
       </div>
     </div>
+  );
+};
+
+const SummaryItem = ({ label, value, green }: any) => (
+  <div className="flex justify-between py-3 border-b last:border-0">
+    <span className="text-gray-600">{label}</span>
+    <span className={`font-semibold ${green ? 'text-green-600' : ''}`}>
+      {value}
+    </span>
+  </div>
+);
+
+const ActionButton = ({ label, icon: Icon, green, purple }: any) => {
+  const color = green
+    ? 'from-green-500 to-green-600'
+    : purple
+    ? 'from-purple-500 to-purple-600'
+    : 'from-blue-500 to-blue-600';
+
+  return (
+    <button className={`w-full flex items-center justify-between p-4 rounded-xl bg-gradient-to-r ${color} text-white shadow hover:shadow-lg transition`}>
+      <span className="font-semibold">{label}</span>
+      <Icon className="w-5 h-5" />
+    </button>
   );
 };
