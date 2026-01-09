@@ -4,7 +4,7 @@ import { User } from "../app/types/user";
 import { api } from "./api";
 //TODO lembrar de gravar o accesstoken no localStorage(no response do loggin):
 //localStorage.setItem("accessToken", response.data.accessToken);
-const AUTH_URL = "/auth";
+const AUTH_URL = "localhost:8080/auth";
 
 export const AuthService = {
   register(user: User) {
