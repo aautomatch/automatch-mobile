@@ -1,12 +1,13 @@
-import axios from "axios";
+
+import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Interceptor para JWT
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem("accessToken");
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
