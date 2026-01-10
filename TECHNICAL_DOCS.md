@@ -2,7 +2,7 @@
 
 ## 📊 Visão Geral da Arquitetura
 
-### Estrutura de Pastas
+### Estrutura de Pastasw
 ```
 src/app/
 ├── components/          # Componentes reutilizáveis da UI
