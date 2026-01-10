@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { searchCep } from '../services/viacep-service';
+import { searchCep } from '../../services/viacep-service';
 
 const logoUrl = new URL('../assets/images/logos/logo.png', import.meta.url).href;
 
@@ -12,11 +12,17 @@ interface RegisterPageProps {
 export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [step, setStep] = useState(0)
+    const [step, setStep] = useState("INITIAL")
 
     const [temp, setTemp] = useState({
         zipError: '',
         repeatPass: ''
+    })
+
+    const [instructor, setInstructor] = useState({
+        hourlyRate: "",
+        bio: "",
+        yearsExperience: ""
     })
 
     const [address, setAddress] = useState({
@@ -30,7 +36,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     })
 
     const [data, setData] = useState({
-        role: 'student',
+        role: 'STUDENT',
         email: '',
         password: '',
         fullName: '',
@@ -63,6 +69,15 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         }
     }, [address.zip_code]);
 
+    function handleOnChangeInstructor(e: React.ChangeEvent<HTMLInputElement>) {
+        const { name, value } = e.target;
+
+        setInstructor(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    }
+
     function handleOnChangeAddress(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
 
@@ -83,9 +98,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">
-            <div className="max-w-md w-full">
-
+        <div className="min-h-screen bg-[#F7F9FC] flex flex-col items-center justify-center p-4">
+            <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <div className="flex justify-center mb-4">
                         <img
@@ -113,14 +127,26 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                     <p className="text-xs text-gray-500 font-medium mb-2">ACESSO RÁPIDO (DEMO)</p>
                     <div className="flex gap-2">
                         <button
-                            onClick={() => setData(() => ({ ...data, role: 'STUDENT' }))}
+                            onClick={() => {
+                                if (step === "EXTRA") {
+                                    setStep("FINAL")
+                                }
+
+                                setData(() => ({ ...data, role: 'STUDENT' }))
+                            }}
                             className="flex-1 px-3 py-2.5 bg-gradient-to-r from-[#2E5A88] to-[#2E5A88]/90 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 hover:shadow-md transition-all"
                         >
                             <span>👨‍🎓</span>
                             Aluno Demo
                         </button>
                         <button
-                            onClick={() => setData(() => ({ ...data, role: 'INSTRUCTOR' }))}
+                            onClick={() => {
+                                if (step === "FINAL") {
+                                    setStep("EXTRA")
+                                }
+
+                                setData(() => ({ ...data, role: 'INSTRUCTOR' }))
+                            }}
                             className="flex-1 px-3 py-2.5 bg-gradient-to-r from-[#4CAF50] to-[#4CAF50]/90 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 hover:shadow-md transition-all"
                         >
                             <span>👨‍🏫</span>
@@ -130,12 +156,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 </div>
 
                 {/* Form principal */}
-                <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                    <form className="space-y-6">
+                <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-lg">
+                    <form className="space-y-4">
 
-                        {step == 0 && <div className="space-y-6">
+                        {step === "INITIAL" && <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Nome
                                 </label>
                                 <div className="relative">
@@ -145,7 +171,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type="text"
                                         value={data.fullName}
                                         onChange={handleOnChangeData}
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="Nome Completo"
                                         required
                                     />
@@ -153,7 +179,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Telefone
                                 </label>
                                 <div className="relative">
@@ -163,7 +189,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type="tel"
                                         value={data.phone}
                                         onChange={handleOnChangeData}
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="11 91000-1000"
                                         required
                                     />
@@ -171,7 +197,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     E-mail
                                 </label>
                                 <div className="relative">
@@ -181,7 +207,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type="email"
                                         value={data.email}
                                         onChange={handleOnChangeData}
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="seu@email.com"
                                         required
                                     />
@@ -189,7 +215,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Senha
                                 </label>
                                 <div className="relative">
@@ -199,7 +225,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type={showPassword ? 'text' : 'password'}
                                         value={data.password}
                                         onChange={handleOnChangeData}
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="••••••••"
                                         required
                                     />
@@ -214,7 +240,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Repetir Senha
                                 </label>
                                 <div className="relative">
@@ -229,7 +255,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                                 repeatPass: e.target.value
                                             }))
                                         }}
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="••••••••"
                                         required
                                     />
@@ -244,9 +270,79 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             </div>
                         </div>}
 
-                        {step == 1 && <div className="space-y-6">
+                        {step === "EXTRA" && <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                    Bio
+                                </label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        name="bio"
+                                        type='text'
+                                        value={instructor.bio}
+                                        onChange={handleOnChangeInstructor}
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
+                                        placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim iusto esse quis error, id suscipit quod ut, cumque architecto atque minima. Exercitationem quae porro distinctio enim inventore? Fugiat, debitis quia."
+                                        maxLength={500}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                    Valor Cobrado (Por Hora)
+                                </label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        name="hourlyRate"
+                                        type='text'
+                                        value={instructor.hourlyRate}
+                                        onChange={(e) => {
+                                            e.target.value = e.target.value
+                                                .replace(/\D/g, '')
+                                                .replace(/(\d)(\d{2})$/, '$1,$2')
+                                                .replace(/(?=(\d{3})+(\D))\B/g, '.');
+
+                                            handleOnChangeInstructor(e)
+                                        }}
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
+                                        placeholder="000.00"
+                                        maxLength={8}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                    Experiência Profissional
+                                </label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        name="yearsExperience"
+                                        type='text'
+                                        value={instructor.yearsExperience}
+                                        onChange={(e) => {
+                                            e.target.value = e.target.value.replace(/\D/g, '')
+
+                                            handleOnChangeInstructor(e)
+                                        }}
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
+                                        placeholder="12"
+                                        maxLength={2}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>}
+
+                        {step === "FINAL" && <div className="space-y-6">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     CEP
                                 </label>
                                 <div className="relative">
@@ -255,8 +351,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         name="zip_code"
                                         type='text'
                                         value={address.zip_code}
-                                        onChange={handleOnChangeAddress}
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
+                                        onChange={(e) => {
+                                            e.target.value = e.target.value.replace(/\D/g, '')
+                                            handleOnChangeAddress(e)
+                                        }}
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="00000-000"
                                         required
                                     />
@@ -264,7 +363,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Estado
                                 </label>
                                 <div className="relative">
@@ -275,15 +374,15 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type='text'
                                         value={address.state}
                                         onChange={handleOnChangeAddress}
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
-                                        placeholder="São Paulo"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
+                                        placeholder="SP"
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Cidade
                                 </label>
                                 <div className="relative">
@@ -294,15 +393,15 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type='text'
                                         value={address.city}
                                         onChange={handleOnChangeAddress}
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
-                                        placeholder="Embu das Artes"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
+                                        placeholder="Embu Guaçu"
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Bairro
                                 </label>
                                 <div className="relative">
@@ -312,8 +411,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type='text'
                                         value={address.neighborhood}
                                         onChange={handleOnChangeAddress}
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
-                                        placeholder="Paque das Chacaras"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
+                                        placeholder="Avenida Jaquatirica"
                                         required
                                     />
                                 </div>
@@ -321,7 +420,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Logradouro
                                 </label>
                                 <div className="relative">
@@ -331,7 +430,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type='text'
                                         value={address.street}
                                         onChange={handleOnChangeAddress}
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="Rua amendoim"
                                         required
                                     />
@@ -339,7 +438,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Número
                                 </label>
                                 <div className="relative">
@@ -348,8 +447,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         name="number"
                                         type='text'
                                         value={address.number}
-                                        onChange={handleOnChangeAddress}
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2E5A88] focus:border-transparent outline-none transition-all duration-300"
+                                        onChange={(e) => {
+                                            e.target.value = e.target.value.replace(/\D/g, '')
+                                            handleOnChangeAddress(e)
+                                        }}
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="1001"
                                         inputMode="numeric"
                                         pattern="[0-9]*"
@@ -360,12 +462,21 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                         </div>}
 
                         <button
-                            type={step >= 1 ? "submit" : "button"}
+                            type={step === "FINAL" ? "submit" : "button"}
                             onClick={() => {
-                                if (step < 1) {
-                                    setStep(step + 1)
-                                } else {
-                                    null
+                                if (step === "INITIAL") {
+                                    if (data.password != temp.repeatPass) {
+                                        alert("As senha não coincidem...")
+                                        return
+                                    }
+
+                                    if (data.role === "STUDENT") {
+                                        setStep("FINAL")
+                                    } else {
+                                        setStep("EXTRA")
+                                    }
+                                } else if (step === "EXTRA") {
+                                    setStep("FINAL")
                                 }
                             }}
                             disabled={loading}
@@ -375,7 +486,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                 'Carregando...'
                             ) : (
                                 <>
-                                    <span>{step >= 1 ? "Criar Conta Grátis" : "Proseguir para próxima etapa"}</span>
+                                    <span>{step === "FINAL" ? "Criar Conta Grátis" : "Proseguir para próxima etapa"}</span>
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                                 </>
                             )}
@@ -414,6 +525,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
 
             </div>
-        </div>
+        </div >
     );
 };
