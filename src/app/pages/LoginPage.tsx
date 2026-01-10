@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Car, Shield, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { AuthService } from '../../services/auth-service';
+import { UserRole } from '../types/user-role';
 
 const logoUrl = new URL('../assets/images/logos/logo.png', import.meta.url).href;
 
@@ -11,6 +13,7 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,9 +21,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
+      const res = await AuthService.login({ email, password });
       await login(email, password);
-      onNavigate(email.includes('instrutor') ? 'instructor-dashboard' : 'student-dashboard');
+      onNavigate(res.data.user.role === UserRole.INSTRUCTOR ? 'instructor-dashboard' : 'student-dashboard');
     } catch (error) {
       console.error('Erro ao fazer login:', error);
     } finally {
@@ -43,19 +48,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <img 
+            <img
               src={logoUrl}
-              alt="AutoMatch Logo" 
-              className="h-16 w-auto"  
+              alt="AutoMatch Logo"
+              className="h-16 w-auto"
             />
           </div>
-          
+
           <div className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 mb-3">
             <span className="text-xs font-medium text-gray-700">
               Conectando alunos e instrutores
             </span>
           </div>
-          
+
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Bem-vindo de volta!
           </h1>
@@ -64,7 +69,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           </p>
         </div>
 
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <p className="text-xs text-gray-500 font-medium mb-2">ACESSO RÁPIDO (DEMO)</p>
           <div className="flex gap-2">
             <button
@@ -82,7 +87,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               Instrutor Demo
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Formulário Principal */}
         <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-lg">
@@ -128,21 +133,21 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-              <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input 
-                    type="checkbox" 
-                    className="w-3.5 h-3.5 text-[#2E5A88] border-gray-300 rounded focus:ring-2 focus:ring-[#4CAF50]" 
-                  />
-                  <span className="ml-1.5 text-xs text-gray-600">Lembrar-me</span>
-                </label>
-                <button 
-                  type="button" 
-                  className="text-xs font-medium text-[#2E5A88] hover:text-[#4CAF50] hover:underline"
-                >
-                  Esqueceu a senha?
-                </button>
-              </div>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="w-3.5 h-3.5 text-[#2E5A88] border-gray-300 rounded focus:ring-2 focus:ring-[#4CAF50]"
+                />
+                <span className="ml-1.5 text-xs text-gray-600">Lembrar-me</span>
+              </label>
+              <button
+                type="button"
+                className="text-xs font-medium text-[#2E5A88] hover:text-[#4CAF50] hover:underline"
+              >
+                Esqueceu a senha?
+              </button>
+            </div>
 
             <button
               type="submit"
@@ -197,7 +202,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             <ArrowRight className="w-3 h-3 rotate-180" />
             Voltar para página inicial
           </button>
-          
+
           <div className="text-center">
             <div className="inline-flex items-center gap-1.5 text-[10px] text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full">
               <div className="w-1.5 h-1.5 bg-[#4CAF50] rounded-full"></div>

@@ -6,10 +6,10 @@ import { api } from "./api";
 
 export const AuthService = {
   register(user: User) {
-    return api.post<User>('localhost:8080/register', user);
+    return api.post<User>('/auth/register', user);
   },
 
   login(data: LoginRequest) {
-    return api.post<TokenResponse>('localhost:8080/login', data);
+    return api.post<TokenResponse>('/auth/login', data);
   }
 };

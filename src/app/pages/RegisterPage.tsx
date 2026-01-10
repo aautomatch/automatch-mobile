@@ -17,6 +17,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState("INITIAL")
+    const { login } = useAuth();
 
     const [temp, setTemp] = useState({
         zipError: '',
@@ -41,7 +42,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
     const [user, setUser] = useState<User>({
         role: UserRole.STUDENT,
-        profileImageUrl: "test",
+        profileImageUrl: "https://example.com/profiles/carlos.jpg",
         isActive: true,
         email: '',
         password: '',
@@ -56,9 +57,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
         try {
             await AuthService.register(user);
-            onNavigate(user.email.includes('INSTRUCTOR') ? 'instructor-dashboard' : 'student-dashboard');
+            await login(user.email, user.password);
+            onNavigate(user.role === UserRole.INSTRUCTOR ? 'instructor-dashboard' : 'student-dashboard');
         } catch (error) {
-            console.error('Erro ao fazer login:', error);
+            console.error('Erro ao fazer registro:', error);
         } finally {
             setLoading(false);
         }
@@ -100,7 +102,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
         setAddress(prev => ({
             ...prev,
-            [name]: name === "zipCode" || name === "number" ? value.replace(/\D/g, "") : value
+            [name]: value
         }));
     }
 
@@ -116,7 +118,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
     function stepVerification() {
         const regex = {
-            email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            email: /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
             fullName: /^[A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)+$/,
             address: /^[A-Za-zÀ-ÿ0-9]+(?:[\s.-][A-Za-zÀ-ÿ0-9]+)*$/,
             number: /^(\d+|s\/n)$/i
@@ -135,17 +137,17 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 throw new Error("E-mail inválido")
             }
 
-            if (user.password != temp.repeatPass) {
-                throw new Error("As senha não coincidem...")
-            }
-
             if (user.password.length < 8 || temp.repeatPass.length < 8) {
                 throw new Error("A senha deve ser maior que 8 caracteres")
+            }
+
+            if (user.password != temp.repeatPass) {
+                throw new Error("As senha não coincidem...")
             }
         }
 
         if (step === "FINAL") {
-            if (address.zipCode.length < 8) {
+            if (address.zipCode.length < 9) {
                 throw new Error("CEP inválido")
             }
 
@@ -162,19 +164,19 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
             }
         }
 
-        if (step === "EXTRA") {
-            if (instructor.bio.length < 10) {
-                throw new Error("Por favor, insira uma pequena apresentação sobre você")
-            }
+        // if (step === "EXTRA") {
+        //     if (instructor.bio.length < 10) {
+        //         throw new Error("Por favor, insira uma pequena apresentação sobre você")
+        //     }
 
-            if (!(instructor.hourlyRate.length > 4)) {
-                throw new Error("Valor minimo: 1,00")
-            }
+        //     if (!(instructor.hourlyRate.length > 4)) {
+        //         throw new Error("Valor minimo: 1,00")
+        //     }
 
-            if (instructor.yearsExperience.length === 0) {
-                throw new Error("Valor minimo: 0")
-            }
-        }
+        //     if (instructor.yearsExperience.length === 0) {
+        //         throw new Error("Valor minimo: 0")
+        //     }
+        // }
     }
 
     useEffect(() => {
@@ -209,7 +211,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                     </p>
                 </div>
 
-                <div className="mb-6">
+                {/* <div className="mb-6">
                     <p className="text-xs text-gray-500 font-medium mb-2">ACESSO RÁPIDO (DEMO)</p>
                     <div className="flex gap-2">
                         <button
@@ -239,7 +241,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             Instrutor Demo
                         </button>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Form principal */}
                 <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-lg">
@@ -317,6 +319,39 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                    Tipo de Usuário:
+                                </label>
+
+                                <div className="flex flex-wrap items-center justify-center gap-x-[7.5rem] gap-y-3">
+                                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value={UserRole.INSTRUCTOR}
+                                            checked={user.role === UserRole.INSTRUCTOR}
+                                            onChange={handleOnChangeData}
+                                            className="w-4 h-4 border-gray-300 text-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]"
+                                        />
+                                        Instrutor
+                                    </label>
+
+                                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value={UserRole.STUDENT}
+                                            checked={user.role === UserRole.STUDENT}
+                                            onChange={handleOnChangeData}
+                                            className="w-4 h-4 border-gray-300 text-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]"
+                                        />
+                                        Aluno
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Senha
                                 </label>
                                 <div className="relative">
@@ -373,7 +408,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             </div>
                         </div>}
 
-                        {step === "EXTRA" && <div className="space-y-6">
+                        {/* {step === "EXTRA" && <div className="space-y-6">
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Bio
@@ -440,7 +475,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                     />
                                 </div>
                             </div>
-                        </div>}
+                        </div>} */}
 
                         {step === "FINAL" && <div className="space-y-6">
                             <div>
@@ -454,7 +489,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         type='text'
                                         value={address.zipCode}
                                         onChange={(e) => {
-                                            e.target.value = e.target.value.replace(/\D/g, '')
+                                            e.target.value = e.target.value.replace(/\D/g, '').replace(/(\d{5})(\d{3})$/, '$1-$2')
                                             handleOnChangeAddress(e)
                                         }}
                                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
@@ -568,16 +603,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                             onClick={() => {
                                 try {
                                     stepVerification()
-                                    
-                                    if (step === "INITIAL") {
-                                        if (user.role === UserRole.STUDENT) {
-                                            setStep("FINAL")
-                                        } else {
-                                            setStep("EXTRA")
-                                        }
-                                    } else if (step === "EXTRA") {
-                                        setStep("FINAL")
-                                    }
+                                    setStep("FINAL")
                                 } catch (err) {
                                     if (err instanceof Error) {
                                         alert(err.message);
@@ -627,8 +653,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                         🔒 Seus dados estão seguros conosco • Criptografia de ponta a ponta
                     </p>
                 </div>
-
-
             </div>
         </div >
     );
