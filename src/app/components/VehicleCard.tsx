@@ -1,6 +1,6 @@
 import React from 'react';
 import { Car, Settings, Wind, CheckCircle, AlertCircle } from 'lucide-react';
-import { Vehicle } from '../types';
+import { Vehicle } from '../types/';
 
 interface VehicleCardProps {
   vehicle: Vehicle;

@@ -9,8 +9,11 @@ import { StudentDashboard } from "./pages/StudentDashboard";
 import { InstructorDashboard } from "./pages/InstructorDashboard";
 import { SearchInstructors } from "./pages/SearchInstructors";
 import { BookLessonPage } from "./pages/BookLessonPage";
-import { Instructor } from "./types";
+import { Instructor } from "./types/Instructor";
 import { VehiclesPage } from "./pages/VehiclesPage";
+import { EditVehiclePage } from "./pages/EditVehiclePage";
+import { InstructorCalendarPage } from "./pages/InstructorCalendarPage";
+import { InstructorReviewsPage } from "./pages/InstructorReviewsPage";
 
 type Page =
   | "home"
@@ -23,7 +26,10 @@ type Page =
   | "favorites"
   | "profile"
   | "vehicles"
+  | "add-vehicle"
+  | "edit-vehicle"
   | "lessons"
+  | "reviews"
   | "about";
 
 function AppContent() {
@@ -31,6 +37,7 @@ function AppContent() {
   const [selectedInstructor, setSelectedInstructor] = useState<
     Instructor | undefined
   >();
+  //const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const { isAuthenticated, isInstructor } = useAuth();
 
   const handleNavigate = (page: string) => {
@@ -42,6 +49,22 @@ function AppContent() {
     setSelectedInstructor(instructor);
   };
 
+  // const handleSelectVehicle = (vehicle: any) => {
+  //   setSelectedVehicle(vehicle);
+  // };
+  
+  const getSelectedVehicleId = () => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("selectedVehicleId");
+    }
+    return null;
+  };
+
+  const clearSelectedVehicleId = () => {
+    localStorage.removeItem("selectedVehicleId");
+    localStorage.removeItem("selectedVehicle");
+  };
+
   useEffect(() => {
     const protectedPages: Page[] = [
       "student-dashboard",
@@ -51,6 +74,9 @@ function AppContent() {
       "favorites",
       "profile",
       "vehicles",
+      "add-vehicle",
+      "edit-vehicle",
+      "reviews",
       "lessons",
     ];
 
@@ -130,9 +156,34 @@ function AppContent() {
             onSelectInstructor={handleSelectInstructor}
           />
         );
-      case "lessons":
-        return <InstructorDashboard onNavigate={handleNavigate} />;
 
+      case "add-vehicle":
+        return <EditVehiclePage onNavigate={handleNavigate} />;
+
+      case "edit-vehicle":
+        const vehicleId = getSelectedVehicleId();
+        return (
+          <EditVehiclePage
+            onNavigate={(page) => {
+              clearSelectedVehicleId();
+              handleNavigate(page);
+            }}
+            vehicleId={vehicleId || undefined}
+          />
+        );
+
+      case "lessons":
+        if (isInstructor) {
+          return <InstructorCalendarPage onNavigate={handleNavigate} />;
+        } else {
+          return <StudentDashboard onNavigate={handleNavigate} />;
+        }
+      case "reviews":
+        if (isInstructor) {
+          return <InstructorReviewsPage onNavigate={handleNavigate} />;
+        } else {
+          return <StudentDashboard onNavigate={handleNavigate} />;
+        }
       case "about":
         return (
           <div className="min-h-screen bg-gray-50 pt-8">
