@@ -9,6 +9,7 @@ import { StudentDashboard } from "./pages/StudentDashboard";
 import { InstructorDashboard } from "./pages/InstructorDashboard";
 import { SearchInstructors } from "./pages/SearchInstructors";
 import { BookLessonPage } from "./pages/BookLessonPage";
+import { RegisterPage } from "./pages/RegisterPage";
 import { Instructor } from "./types/Instructor";
 import { VehiclesPage } from "./pages/VehiclesPage";
 import { EditVehiclePage } from "./pages/EditVehiclePage";
@@ -29,13 +30,15 @@ type Page =
   | "add-vehicle"
   | "edit-vehicle"
   | "lessons"
+  | "about"
+  | "register"
   | "reviews"
   | "about";
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
   const [selectedInstructor, setSelectedInstructor] = useState<
-    Instructor | undefined
+    any
   >();
   //const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const { isAuthenticated, isInstructor } = useAuth();
@@ -45,7 +48,7 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleSelectInstructor = (instructor: Instructor) => {
+  const handleSelectInstructor = (instructor: any) => {
     setSelectedInstructor(instructor);
   };
 
@@ -92,6 +95,9 @@ function AppContent() {
 
       case "login":
         return <LoginPage onNavigate={handleNavigate} />;
+
+      case 'register':
+        return <RegisterPage onNavigate={handleNavigate} />;
 
       case "student-dashboard":
         return <StudentDashboard onNavigate={handleNavigate} />;
