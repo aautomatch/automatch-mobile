@@ -10,6 +10,8 @@ import { InstructorDashboard } from "./pages/InstructorDashboard";
 import { SearchInstructors } from "./pages/SearchInstructors";
 import { BookLessonPage } from "./pages/BookLessonPage";
 import { Instructor } from "./types/intructor";
+// import { Instructor } from "./types";
+import { RegisterPage } from "./pages/RegisterPage";
 import { VehiclesPage } from "./pages/VehiclesPage";
 
 type Page =
@@ -24,12 +26,13 @@ type Page =
   | "profile"
   | "vehicles"
   | "lessons"
-  | "about";
+  | "about"
+  | "register";
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
   const [selectedInstructor, setSelectedInstructor] = useState<
-    Instructor | undefined
+    any
   >();
   const { isAuthenticated, isInstructor } = useAuth();
 
@@ -38,7 +41,7 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleSelectInstructor = (instructor: Instructor) => {
+  const handleSelectInstructor = (instructor: any) => {
     setSelectedInstructor(instructor);
   };
 
@@ -66,6 +69,9 @@ function AppContent() {
 
       case "login":
         return <LoginPage onNavigate={handleNavigate} />;
+
+      case 'register':
+        return <RegisterPage onNavigate={handleNavigate} />;
 
       case "student-dashboard":
         return <StudentDashboard onNavigate={handleNavigate} />;
