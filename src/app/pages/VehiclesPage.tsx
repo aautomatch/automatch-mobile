@@ -208,22 +208,23 @@ export const VehiclesPage: React.FC<VehiclesPageProps> = ({
     }
   };
 
-  const handleEditVehicle = (vehicle: any) => {
-    if (isInstructor && vehicle.instructor_id === user?.id) {
-      handleNavigate("edit-vehicle", vehicle);
-    }
-  };
+const handleEditVehicle = (vehicle: any) => {
+  if (isInstructor && vehicle.instructor_id === user?.id) {
+    localStorage.setItem('selectedVehicleId', vehicle.id);
+    localStorage.setItem('selectedVehicle', JSON.stringify(vehicle));
+    handleNavigate("edit-vehicle");
+  }
+};
 
   const getPageTitle = () => {
     if (isInstructor) {
       return "Meus Veículos";
     }
-    return "Frota de Veículos";
   };
 
   const getPageDescription = () => {
     if (isInstructor) {
-      return "Gerencie sua frota de veículos para aulas";
+      return "Gerencie seus veículos para aulas";
     }
     return "Veículos disponíveis para agendar aulas";
   };
