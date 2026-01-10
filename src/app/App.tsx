@@ -9,7 +9,7 @@ import { StudentDashboard } from "./pages/StudentDashboard";
 import { InstructorDashboard } from "./pages/InstructorDashboard";
 import { SearchInstructors } from "./pages/SearchInstructors";
 import { BookLessonPage } from "./pages/BookLessonPage";
-import { Instructor } from "./types";
+import { Instructor } from "./types/intructor";
 import { VehiclesPage } from "./pages/VehiclesPage";
 
 type Page =
