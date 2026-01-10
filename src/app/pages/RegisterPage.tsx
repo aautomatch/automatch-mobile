@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { searchCep } from '../../services/viacep-service';
+import { AuthService } from '../../services/auth-service';
+import { User } from '../types/user';
+import { UserRole } from '../types/user-role';
+import { Address } from '../types/address';
 
 const logoUrl = new URL('../assets/images/logos/logo.png', import.meta.url).href;
 
@@ -25,18 +29,20 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         yearsExperience: ""
     })
 
-    const [address, setAddress] = useState({
+    const [address, setAddress] = useState<Address>({
         street: '',
         number: '',
         neighborhood: '',
         city: '',
         state: '',
         country: 'Brazil',
-        zip_code: ''
+        zipCode: ''
     })
 
-    const [data, setData] = useState({
-        role: 'STUDENT',
+    const [user, setUser] = useState<User>({
+        role: UserRole.STUDENT,
+        profileImageUrl: "test",
+        isActive: true,
         email: '',
         password: '',
         fullName: '',
@@ -44,9 +50,26 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         address: address
     })
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            await AuthService.register(user);
+            onNavigate(user.email.includes('INSTRUCTOR') ? 'instructor-dashboard' : 'student-dashboard');
+        } catch (error) {
+            console.error('Erro ao fazer login:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     async function handleSearchCep(zipCode: string) {
         try {
             const temp = await searchCep(zipCode);
+            console.log(temp)
+
             setAddress(prev => ({
                 ...prev,
                 street: temp.logradouro,
@@ -63,12 +86,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         }
     }
 
-    useEffect(() => {
-        if (address.zip_code.length >= 8) {
-            handleSearchCep(address.zip_code)
-        }
-    }, [address.zip_code]);
-
     function handleOnChangeInstructor(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
 
@@ -83,7 +100,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
         setAddress(prev => ({
             ...prev,
-            [name]: name === "zip_code" || name === "number" ? value.replace(/\D/g, "") : value
+            [name]: name === "zipCode" || name === "number" ? value.replace(/\D/g, "") : value
         }));
     }
 
@@ -91,11 +108,80 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     function handleOnChangeData(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
 
-        setData(prev => ({
+        setUser(prev => ({
             ...prev,
             [name]: value
         }));
     }
+
+    function stepVerification() {
+        const regex = {
+            email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            fullName: /^[A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)+$/,
+            address: /^[A-Za-zÀ-ÿ0-9]+(?:[\s.-][A-Za-zÀ-ÿ0-9]+)*$/,
+            number: /^(\d+|s\/n)$/i
+        }
+
+        if (step === "INITIAL") {
+            if (!regex.fullName.test(user.fullName.trim())) {
+                throw new Error("Por favor, insira o nome e sobrenome")
+            }
+
+            if (user.phone.length < 14) {
+                throw new Error("Por favor, insira um número de telefone válido")
+            }
+
+            if (!regex.email.test(user.email.trim())) {
+                throw new Error("E-mail inválido")
+            }
+
+            if (user.password != temp.repeatPass) {
+                throw new Error("As senha não coincidem...")
+            }
+
+            if (user.password.length < 8 || temp.repeatPass.length < 8) {
+                throw new Error("A senha deve ser maior que 8 caracteres")
+            }
+        }
+
+        if (step === "FINAL") {
+            if (address.zipCode.length < 8) {
+                throw new Error("CEP inválido")
+            }
+
+            if (!regex.address.test(address.street.trim())) {
+                throw new Error("Por favor, insira um logradouro válido")
+            }
+
+            if (!regex.address.test(address.neighborhood.trim())) {
+                throw new Error("Por favor, insira um bairro válido")
+            }
+
+            if (!regex.number.test(address.number.trim())) {
+                throw new Error("Por favor, insira um número de endereço válido")
+            }
+        }
+
+        if (step === "EXTRA") {
+            if (instructor.bio.length < 10) {
+                throw new Error("Por favor, insira uma pequena apresentação sobre você")
+            }
+
+            if (!(instructor.hourlyRate.length > 4)) {
+                throw new Error("Valor minimo: 1,00")
+            }
+
+            if (instructor.yearsExperience.length === 0) {
+                throw new Error("Valor minimo: 0")
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (address.zipCode.length >= 8) {
+            handleSearchCep(address.zipCode)
+        }
+    }, [address.zipCode]);
 
     return (
         <div className="min-h-screen bg-[#F7F9FC] flex flex-col items-center justify-center p-4">
@@ -132,7 +218,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                     setStep("FINAL")
                                 }
 
-                                setData(() => ({ ...data, role: 'STUDENT' }))
+                                setUser(() => ({ ...user, role: UserRole.STUDENT }))
                             }}
                             className="flex-1 px-3 py-2.5 bg-gradient-to-r from-[#2E5A88] to-[#2E5A88]/90 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 hover:shadow-md transition-all"
                         >
@@ -145,7 +231,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                     setStep("EXTRA")
                                 }
 
-                                setData(() => ({ ...data, role: 'INSTRUCTOR' }))
+                                setUser(() => ({ ...user, role: UserRole.INSTRUCTOR }))
                             }}
                             className="flex-1 px-3 py-2.5 bg-gradient-to-r from-[#4CAF50] to-[#4CAF50]/90 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 hover:shadow-md transition-all"
                         >
@@ -157,7 +243,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
                 {/* Form principal */}
                 <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-lg">
-                    <form className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
 
                         {step === "INITIAL" && <div className="space-y-6">
                             <div>
@@ -167,9 +253,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
-                                        name='name'
+                                        name='fullName'
                                         type="text"
-                                        value={data.fullName}
+                                        value={user.fullName}
                                         onChange={handleOnChangeData}
                                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="Nome Completo"
@@ -187,8 +273,23 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                     <input
                                         name='phone'
                                         type="tel"
-                                        value={data.phone}
-                                        onChange={handleOnChangeData}
+                                        value={user.phone}
+                                        onChange={(e) => {
+                                            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11).replace(/^(\d{2})(\d{4,5})(\d{4})$/, '($1) $2-$3')
+
+                                            handleOnChangeData(e)
+                                        }}
+                                        onPaste={(e: React.ClipboardEvent<HTMLInputElement>) => {
+                                            e.preventDefault();
+
+                                            const input = e.target as HTMLInputElement;
+
+                                            input.value = e.clipboardData
+                                                .getData('text')
+                                                .replace(/\D/g, '')
+                                                .slice(0, 11)
+                                                .replace(/^(\d{2})(\d{4,5})(\d{4})$/, '($1) $2-$3');
+                                        }}
                                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="11 91000-1000"
                                         required
@@ -205,7 +306,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                     <input
                                         name='email'
                                         type="email"
-                                        value={data.email}
+                                        value={user.email}
                                         onChange={handleOnChangeData}
                                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="seu@email.com"
@@ -223,10 +324,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                     <input
                                         name="password"
                                         type={showPassword ? 'text' : 'password'}
-                                        value={data.password}
+                                        value={user.password}
                                         onChange={handleOnChangeData}
                                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="••••••••"
+                                        maxLength={24}
                                         required
                                     />
                                     <button
@@ -257,6 +359,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         }}
                                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="••••••••"
+                                        maxLength={24}
                                         required
                                     />
                                     <button
@@ -303,8 +406,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         onChange={(e) => {
                                             e.target.value = e.target.value
                                                 .replace(/\D/g, '')
-                                                .replace(/(\d)(\d{2})$/, '$1,$2')
-                                                .replace(/(?=(\d{3})+(\D))\B/g, '.');
+                                                .replace(/(\d)(\d{2})$/, '$1.$2')
 
                                             handleOnChangeInstructor(e)
                                         }}
@@ -348,15 +450,16 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
-                                        name="zip_code"
+                                        name="zipCode"
                                         type='text'
-                                        value={address.zip_code}
+                                        value={address.zipCode}
                                         onChange={(e) => {
                                             e.target.value = e.target.value.replace(/\D/g, '')
                                             handleOnChangeAddress(e)
                                         }}
                                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="00000-000"
+                                        maxLength={8}
                                         required
                                     />
                                 </div>
@@ -402,25 +505,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
                             <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Bairro
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        name="neighborhood"
-                                        type='text'
-                                        value={address.neighborhood}
-                                        onChange={handleOnChangeAddress}
-                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
-                                        placeholder="Avenida Jaquatirica"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                                     Logradouro
                                 </label>
                                 <div className="relative">
@@ -432,6 +516,24 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                         onChange={handleOnChangeAddress}
                                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
                                         placeholder="Rua amendoim"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                    Bairro
+                                </label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        name="neighborhood"
+                                        type='text'
+                                        value={address.neighborhood}
+                                        onChange={handleOnChangeAddress}
+                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
+                                        placeholder="Avenida Jaquatirica"
                                         required
                                     />
                                 </div>
@@ -464,19 +566,22 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                         <button
                             type={step === "FINAL" ? "submit" : "button"}
                             onClick={() => {
-                                if (step === "INITIAL") {
-                                    if (data.password != temp.repeatPass) {
-                                        alert("As senha não coincidem...")
-                                        return
-                                    }
-
-                                    if (data.role === "STUDENT") {
+                                try {
+                                    stepVerification()
+                                    
+                                    if (step === "INITIAL") {
+                                        if (user.role === UserRole.STUDENT) {
+                                            setStep("FINAL")
+                                        } else {
+                                            setStep("EXTRA")
+                                        }
+                                    } else if (step === "EXTRA") {
                                         setStep("FINAL")
-                                    } else {
-                                        setStep("EXTRA")
                                     }
-                                } else if (step === "EXTRA") {
-                                    setStep("FINAL")
+                                } catch (err) {
+                                    if (err instanceof Error) {
+                                        alert(err.message);
+                                    }
                                 }
                             }}
                             disabled={loading}
