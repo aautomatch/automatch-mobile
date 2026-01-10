@@ -34,8 +34,11 @@ export const InstructorCard: React.FC<InstructorCardProps> = ({
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group">
       {/* Cabeçalho com imagem */}
       <div className="relative h-56 overflow-hidden">
+        
         <img
-          src={instructor.profile_image_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400'}
+          src={instructor.profile_image && instructor.profile_image.trim() !== ''
+      ? instructor.profile_image
+      : '/avatar-default.png'}
           alt={instructor.full_name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
