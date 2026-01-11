@@ -7,10 +7,10 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const AuthService = {
   register(user: User) {
-    return api.post<User>(`${API_URL}/register`, user);
+    return api.post<User>(`${API_URL}/auth/register`, user);
   },
 
   login(data: LoginRequest) {
-    return api.post<TokenResponse>(`${API_URL}/login`, data);
+    return api.post<TokenResponse>(`${API_URL}/auth/login`, data);
   }
 };
