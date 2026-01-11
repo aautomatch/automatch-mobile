@@ -24,12 +24,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         repeatPass: ''
     })
 
-    const [instructor, setInstructor] = useState({
-        hourlyRate: "",
-        bio: "",
-        yearsExperience: ""
-    })
-
     const [address, setAddress] = useState<Address>({
         street: '',
         number: '',
@@ -69,32 +63,24 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
     async function handleSearchCep(zipCode: string) {
         try {
-            const temp = await searchCep(zipCode);
-            console.log(temp)
+            const zip = await searchCep(zipCode);
+            console.log(zip)
 
             setAddress(prev => ({
                 ...prev,
-                street: temp.logradouro,
-                neighborhood: temp.bairro,
-                city: temp.localidade,
-                state: temp.uf,
+                street: zip.logradouro,
+                neighborhood: zip.bairro,
+                city: zip.localidade,
+                state: zip.uf,
 
             }));
         } catch (err) {
+            console.log(err)
             setTemp(prev => ({
                 ...prev,
                 zipError: "CEP inválido ou não encontrado."
             }));
         }
-    }
-
-    function handleOnChangeInstructor(e: React.ChangeEvent<HTMLInputElement>) {
-        const { name, value } = e.target;
-
-        setInstructor(prev => ({
-            ...prev,
-            [name]: value
-        }));
     }
 
     function handleOnChangeAddress(e: React.ChangeEvent<HTMLInputElement>) {
@@ -163,20 +149,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 throw new Error("Por favor, insira um número de endereço válido")
             }
         }
-
-        // if (step === "EXTRA") {
-        //     if (instructor.bio.length < 10) {
-        //         throw new Error("Por favor, insira uma pequena apresentação sobre você")
-        //     }
-
-        //     if (!(instructor.hourlyRate.length > 4)) {
-        //         throw new Error("Valor minimo: 1,00")
-        //     }
-
-        //     if (instructor.yearsExperience.length === 0) {
-        //         throw new Error("Valor minimo: 0")
-        //     }
-        // }
     }
 
     useEffect(() => {
@@ -184,6 +156,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
             handleSearchCep(address.zipCode)
         }
     }, [address.zipCode]);
+
+    useEffect(() => {
+        setUser({ ...user, address: address })
+    }, [address]);
 
     return (
         <div className="min-h-screen bg-[#F7F9FC] flex flex-col items-center justify-center p-4">
@@ -210,38 +186,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                         Crie sua conta gratuitamente
                     </p>
                 </div>
-
-                {/* <div className="mb-6">
-                    <p className="text-xs text-gray-500 font-medium mb-2">ACESSO RÁPIDO (DEMO)</p>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => {
-                                if (step === "EXTRA") {
-                                    setStep("FINAL")
-                                }
-
-                                setUser(() => ({ ...user, role: UserRole.STUDENT }))
-                            }}
-                            className="flex-1 px-3 py-2.5 bg-gradient-to-r from-[#2E5A88] to-[#2E5A88]/90 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 hover:shadow-md transition-all"
-                        >
-                            <span>👨‍🎓</span>
-                            Aluno Demo
-                        </button>
-                        <button
-                            onClick={() => {
-                                if (step === "FINAL") {
-                                    setStep("EXTRA")
-                                }
-
-                                setUser(() => ({ ...user, role: UserRole.INSTRUCTOR }))
-                            }}
-                            className="flex-1 px-3 py-2.5 bg-gradient-to-r from-[#4CAF50] to-[#4CAF50]/90 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 hover:shadow-md transition-all"
-                        >
-                            <span>👨‍🏫</span>
-                            Instrutor Demo
-                        </button>
-                    </div>
-                </div> */}
 
                 {/* Form principal */}
                 <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-lg">
@@ -407,75 +351,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                                 </div>
                             </div>
                         </div>}
-
-                        {/* {step === "EXTRA" && <div className="space-y-6">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Bio
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        name="bio"
-                                        type='text'
-                                        value={instructor.bio}
-                                        onChange={handleOnChangeInstructor}
-                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
-                                        placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim iusto esse quis error, id suscipit quod ut, cumque architecto atque minima. Exercitationem quae porro distinctio enim inventore? Fugiat, debitis quia."
-                                        maxLength={500}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Valor Cobrado (Por Hora)
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        name="hourlyRate"
-                                        type='text'
-                                        value={instructor.hourlyRate}
-                                        onChange={(e) => {
-                                            e.target.value = e.target.value
-                                                .replace(/\D/g, '')
-                                                .replace(/(\d)(\d{2})$/, '$1.$2')
-
-                                            handleOnChangeInstructor(e)
-                                        }}
-                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
-                                        placeholder="000.00"
-                                        maxLength={8}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                                    Experiência Profissional
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        name="yearsExperience"
-                                        type='text'
-                                        value={instructor.yearsExperience}
-                                        onChange={(e) => {
-                                            e.target.value = e.target.value.replace(/\D/g, '')
-
-                                            handleOnChangeInstructor(e)
-                                        }}
-                                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent outline-none"
-                                        placeholder="12"
-                                        maxLength={2}
-                                        required
-                                    />
-                                </div>
-                            </div>
-                        </div>} */}
 
                         {step === "FINAL" && <div className="space-y-6">
                             <div>
